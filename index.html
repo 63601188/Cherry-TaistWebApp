@@ -43,9 +43,9 @@
    };
      const Params = {
        headers:{
-         'Content-Type':'application/json';
+         'Content-Type':'application/json'
        },
-       body:Data,
+       body:JSON.stringify(Data),
        method:'Post'
      };
      console.log(JSON.stringify(Data));
