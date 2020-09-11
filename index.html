@@ -6,7 +6,7 @@
   <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
 </head>
 <body>
- <ons-navigator swipeable id="myNavigator" page="page1.html"></ons-navigator>
+  <ons-navigator swipeable id="myNavigator" page="page1.html"></ons-navigator>
 
 <template id="page1.html">
   <ons-page id="page1">
@@ -14,8 +14,9 @@
       <div class="center">Page 1</div>
     </ons-toolbar>
 
-    <p id="latlng">This is the first page.</p>
+    <p>This is the first page.</p>
 
+    <ons-button id="push-button">Push page</ons-button>
   </ons-page>
 </template>
 
@@ -26,31 +27,21 @@
       <div class="center"></div>
     </ons-toolbar>
 
-    <pid="latlng">This is the second page.</p>
+    <p>This is the second page.</p>
   </ons-page>
 </template>
-<script>
-document.addEventListener('init', function(event) {
+ <scrip>
+ document.addEventListener('init', function(event) {
   var page = event.target;
 
-  function showPosition(position) {
-    page.querySelector('#latlng').innerHTML = " Latitude: " + position.coords.latitude + " <br>Longitude: "
-  }
-  
   if (page.id === 'page1') {
     page.querySelector('#push-button').onclick = function() {
       document.querySelector('#myNavigator').pushPage('page2.html', {data: {title: 'Page 2'}});
     };
-    
   } else if (page.id === 'page2') {
     page.querySelector('ons-toolbar .center').innerHTML = page.data.title;
-    navigator.geolocation.getCurrentPosition(showPosition);
-    
   }
 }); 
-  </script> 
+</scrip> 
 </body>
 </html>
-  
-  
-
