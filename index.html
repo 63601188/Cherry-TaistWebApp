@@ -1,12 +1,78 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+  <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
 </head>
 <body>
 
+<ons-navigator swipeable id="myNavigator" page="Smartphone Probe.html"></ons-navigator>
+<template id="Smartphone Probe.html">
+
+<ons-page>
+
+<ons-toolbar>
+      <div class="center">Smartphone Probe</div>
+</ons-toolbar>
+
+<br></br>
+<div style="text-align: center; margin-right: 30px;">
+  Project <input type="text" id="Project" style="background-color:#DDCDCD" placeholder="Firebase Project"><br><br>
+Path&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="Path" style="background-color:#DDCDCD" placeholder="Database Path"><br><br>
+GPS<p id="smartphone sensor"></p>
+Motion<label><br><br>
+<ons-button onclick="getLocation1()">Start</ons-button>
+<ons-button onclick="getLocation2()">Online</ons-button>
+</div>
+
+
+
+<script>
+var x = document.getElementById("smartphone sensor");
+function getLocation1() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+}
+}
+</script>
+
+
+<script>
+var x = document.getElementById("smartphone sensor");
+function getLocation2() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+
+var Url ="https://"+document.getElementById("Project").value+".firebaseio.com/"+document.getElementById("Path").value+".json";
+     let Data = {
+       latitude:position.coords.latitude,
+       longgitude:position.coords.longitude
+   };
+     const Params = {
+       headers:{
+         'Content-Type':'application/json'
+       },
+       body:JSON.stringify(Data),
+       method:'Post'
+     };
+     console.log(JSON.stringify(Data));
+     fetch(Url,Params).then(data=>{return data.json();}).then(res=>{console.log(res);});
+}
+</script>
+   
 <div class="p-3 mb-2 bg-secondary" id="demo-div">
 <a id="start_demo" class="btn btn-lg btn-success py-1" href="#" role="button">Start</a>
 <p style="margin-top:1rem;">Num. of datapoints: <span class="badge badge-warning" id="num-observed-events">0</span></p>
@@ -18,7 +84,6 @@
   <li>X-axis: <span id="Accelerometer_x">0</span><span> m/s<sup>2</sup></span></li>
   <li>Y-axis: <span id="Accelerometer_y">0</span><span> m/s<sup>2</sup></span></li>
   <li>Z-axis: <span id="Accelerometer_z">0</span><span> m/s<sup>2</sup></span></li>
-  <li>Data Interval: <span id="Accelerometer_i">0</span><span> ms</span></li>
 </ul>
 
 <h4>Accelerometer including gravity</h4>
@@ -29,9 +94,10 @@
   <li>Z-axis: <span id="Accelerometer_gz">0</span><span> m/s<sup>2</sup></span></li>
 </ul>
 
-
 </div>
+
 <script>
+
 function handleOrientation(event) {
   updateFieldIfNotNull('Orientation_a', event.alpha);
   updateFieldIfNotNull('Orientation_b', event.beta);
@@ -92,7 +158,13 @@ demo_button.onclick = function(e) {
     is_running = true;
   }
 };
-
 </script>
+
+
+</ons-page>
+
+</template>
+
+  
 </body>
 </html>
