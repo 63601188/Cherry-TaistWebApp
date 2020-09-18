@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="p-3 mb-2 bg-secondary" id="demo-div">
-<a id="start_demo" class="btn btn-lg btn-success py-1" href="#" role="button">Start the demo</a>
+<a id="start_demo" class="btn btn-lg btn-success py-1" href="#" role="button">Start</a>
 <p style="margin-top:1rem;">Num. of datapoints: <span class="badge badge-warning" id="num-observed-events">0</span></p>
 
 
@@ -31,13 +31,6 @@
 
 <script>
 
-function handleOrientation(event) {
-  updateFieldIfNotNull('Orientation_a', event.alpha);
-  updateFieldIfNotNull('Orientation_b', event.beta);
-  updateFieldIfNotNull('Orientation_g', event.gamma);
-  incrementEventCount();
-}
-
 function incrementEventCount(){
   let counterElement = document.getElementById("num-observed-events")
   let eventCount = parseInt(counterElement.innerHTML)
@@ -59,11 +52,6 @@ function handleMotion(event) {
   updateFieldIfNotNull('Accelerometer_z', event.acceleration.z);
 
   updateFieldIfNotNull('Accelerometer_i', event.interval, 2);
-
-  updateFieldIfNotNull('Gyroscope_z', event.rotationRate.alpha);
-  updateFieldIfNotNull('Gyroscope_x', event.rotationRate.beta);
-  updateFieldIfNotNull('Gyroscope_y', event.rotationRate.gamma);
-  incrementEventCount();
 }
 
 let is_running = false;
@@ -82,20 +70,19 @@ demo_button.onclick = function(e) {
   if (is_running){
     window.removeEventListener("devicemotion", handleMotion);
     window.removeEventListener("deviceorientation", handleOrientation);
-    demo_button.innerHTML = "Start demo";
+    demo_button.innerHTML = "Start";
     demo_button.classList.add('btn-success');
     demo_button.classList.remove('btn-danger');
     is_running = false;
   }else{
     window.addEventListener("devicemotion", handleMotion);
     window.addEventListener("deviceorientation", handleOrientation);
-    document.getElementById("start_demo").innerHTML = "Stop demo";
+    document.getElementById("start_demo").innerHTML = "Stop";
     demo_button.classList.remove('btn-success');
     demo_button.classList.add('btn-danger');
     is_running = true;
   }
 };
-
 </script>
 </body>
 </html>
