@@ -73,6 +73,25 @@ var Url ="https://"+document.getElementById("Project").value+".firebaseio.com/"+
 }
 </script>
    
+<script>
+function ListSensors()
+{
+  var sensor, i;
+
+  Mobile.SetCurrent("Nexus 7");
+  for (i = 0; i < Mobile.Device().SensorsCount; i++)
+  {
+    sensor = Mobile.Device().Sensor(i);
+    Log.AppendFolder("Sensor " + i + ": " + sensor.Name);
+    Log.Message(sensor.Type);
+    Log.Message("Value0: " + sensor.Values.Value0);
+    Log.Message("Value1: " + sensor.Values.Value1);
+    Log.Message("Value2: " + sensor.Values.Value2);
+    Log.PopLogFolder();
+  }
+}
+</script>
+
 
 </ons-page>
 
