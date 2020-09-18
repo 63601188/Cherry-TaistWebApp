@@ -1,102 +1,101 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
-  <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
-  <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<div class="p-3 mb-2 bg-secondary" id="demo-div">
+<a id="start_demo" class="btn btn-lg btn-success py-1" href="#" role="button">Start the demo</a>
+<p style="margin-top:1rem;">Num. of datapoints: <span class="badge badge-warning" id="num-observed-events">0</span></p>
 
-<ons-navigator swipeable id="myNavigator" page="Smartphone Probe.html"></ons-navigator>
-<template id="Smartphone Probe.html">
 
-<ons-page>
+<h4>Accelerometer</h4>
+<ul>
+  <li>X-axis: <span id="Accelerometer_x">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Y-axis: <span id="Accelerometer_y">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Z-axis: <span id="Accelerometer_z">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Data Interval: <span id="Accelerometer_i">0</span><span> ms</span></li>
+</ul>
 
-<ons-toolbar>
-      <div class="center">Smartphone Probe</div>
-</ons-toolbar>
+<h4>Accelerometer including gravity</h4>
 
-<br></br>
-<div style="text-align: center; margin-right: 30px;">
-  Project <input type="text" id="Project" style="background-color:#DDCDCD" placeholder="Firebase Project"><br><br>
-Path&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="Path" style="background-color:#DDCDCD" placeholder="Database Path"><br><br>
-GPS<p id="smartphone sensor"></p>
-Motion<label><br><br>
-<ons-button onclick="getLocation1()">Start</ons-button>
-<ons-button onclick="getLocation2()">Online</ons-button>
+<ul>
+  <li>X-axis: <span id="Accelerometer_gx">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Y-axis: <span id="Accelerometer_gy">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Z-axis: <span id="Accelerometer_gz">0</span><span> m/s<sup>2</sup></span></li>
+</ul>
+
 </div>
 
-
-
 <script>
-var x = document.getElementById("smartphone sensor");
-function getLocation1() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
-  } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-function showPosition(position) {
-  x.innerHTML = "Latitude: " + position.coords.latitude + 
-  "<br>Longitude: " + position.coords.longitude;
-}
-}
-</script>
 
-
-<script>
-var x = document.getElementById("smartphone sensor");
-function getLocation2() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
-  } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
+function handleOrientation(event) {
+  updateFieldIfNotNull('Orientation_a', event.alpha);
+  updateFieldIfNotNull('Orientation_b', event.beta);
+  updateFieldIfNotNull('Orientation_g', event.gamma);
+  incrementEventCount();
 }
 
-function showPosition(position) {
-
-var Url ="https://"+document.getElementById("Project").value+".firebaseio.com/"+document.getElementById("Path").value+".json";
-     let Data = {
-       latitude:position.coords.latitude,
-       longgitude:position.coords.longitude
-   };
-     const Params = {
-       headers:{
-         'Content-Type':'application/json'
-       },
-       body:JSON.stringify(Data),
-       method:'Post'
-     };
-     console.log(JSON.stringify(Data));
-     fetch(Url,Params).then(data=>{return data.json();}).then(res=>{console.log(res);});
+function incrementEventCount(){
+  let counterElement = document.getElementById("num-observed-events")
+  let eventCount = parseInt(counterElement.innerHTML)
+  counterElement.innerHTML = eventCount + 1;
 }
-</script>
-   
-<script>
-function ListSensors()
-{
-  var sensor, i;
 
-  Mobile.SetCurrent("Nexus 7");
-  for (i = 0; i < Mobile.Device().SensorsCount; i++)
-  {
-    sensor = Mobile.Device().Sensor(i);
-    Log.AppendFolder("Sensor " + i + ": " + sensor.Name);
-    Log.Message(sensor.Type);
-    Log.Message("Value0: " + sensor.Values.Value0);
-    Log.Message("Value1: " + sensor.Values.Value1);
-    Log.Message("Value2: " + sensor.Values.Value2);
-    Log.PopLogFolder();
-  }
+function updateFieldIfNotNull(fieldName, value, precision=10){
+  if (value != null)
+    document.getElementById(fieldName).innerHTML = value.toFixed(precision);
 }
-</script>
 
+function handleMotion(event) {
+  updateFieldIfNotNull('Accelerometer_gx', event.accelerationIncludingGravity.x);
+  updateFieldIfNotNull('Accelerometer_gy', event.accelerationIncludingGravity.y);
+  updateFieldIfNotNull('Accelerometer_gz', event.accelerationIncludingGravity.z);
 
-</ons-page>
+  updateFieldIfNotNull('Accelerometer_x', event.acceleration.x);
+  updateFieldIfNotNull('Accelerometer_y', event.acceleration.y);
+  updateFieldIfNotNull('Accelerometer_z', event.acceleration.z);
 
-</template>
+  updateFieldIfNotNull('Accelerometer_i', event.interval, 2);
 
+  updateFieldIfNotNull('Gyroscope_z', event.rotationRate.alpha);
+  updateFieldIfNotNull('Gyroscope_x', event.rotationRate.beta);
+  updateFieldIfNotNull('Gyroscope_y', event.rotationRate.gamma);
+  incrementEventCount();
+}
+
+let is_running = false;
+let demo_button = document.getElementById("start_demo");
+demo_button.onclick = function(e) {
+  e.preventDefault();
   
+  // Request permission for iOS 13+ devices
+  if (
+    DeviceMotionEvent &&
+    typeof DeviceMotionEvent.requestPermission === "function"
+  ) {
+    DeviceMotionEvent.requestPermission();
+  }
+  
+  if (is_running){
+    window.removeEventListener("devicemotion", handleMotion);
+    window.removeEventListener("deviceorientation", handleOrientation);
+    demo_button.innerHTML = "Start demo";
+    demo_button.classList.add('btn-success');
+    demo_button.classList.remove('btn-danger');
+    is_running = false;
+  }else{
+    window.addEventListener("devicemotion", handleMotion);
+    window.addEventListener("deviceorientation", handleOrientation);
+    document.getElementById("start_demo").innerHTML = "Stop demo";
+    demo_button.classList.remove('btn-success');
+    demo_button.classList.add('btn-danger');
+    is_running = true;
+  }
+};
+
+</script>
 </body>
 </html>
